@@ -46,10 +46,10 @@ fun main() {
     println(part2(input))
 }
 
-enum class Direction { UP, DOWN, FORWARD }
-data class Step(val direction: Direction, val units: Int)
+private enum class Direction { UP, DOWN, FORWARD }
+private data class Step(val direction: Direction, val units: Int)
 
-fun String.toStep() = Step(
+private fun String.toStep() = Step(
     Direction.valueOf(substringBefore(" ").uppercase()),
     substringAfter(" ").toInt()
 )
