@@ -27,7 +27,7 @@ fun main() {
 
         val winners = buildList {
             for (number in bingoNumbers) {
-                mutableBoards.replaceAll { markNumber(it, number) }
+                mutableBoards.replaceAll { it.markNumber(number) }
                 val winningBoards = mutableBoards.filter { it.isComplete() }
                 mutableBoards -= winningBoards.toSet()
                 winningBoards.forEach { add(Pair(it.score(number), it)) }
@@ -59,18 +59,19 @@ fun main() {
     println(part2(input))
 }
 
-data class BingoBoard(val rows: List<List<Int>>)
+data class BingoBoard(val rows: List<List<Int>>) {
+    fun isComplete(): Boolean {
+        return this.rows.any { row -> row.all { it == -1 } }
+                || this.rows.indices.any { col -> this.rows.all { it[col] == -1 } }
+    }
 
-private fun markNumber(board: BingoBoard, number: Int): BingoBoard {
-    return BingoBoard(board.rows.map { row -> row.map { if (it == number) -1 else it } })
+    fun score(winningNumber: Int): Int {
+        return winningNumber * rows.sumOf { row -> row.filter { it != -1 }.sum() }
+    }
+
+    fun markNumber(number: Int): BingoBoard {
+        return BingoBoard(rows.map { row -> row.map { if (it == number) -1 else it } })
+    }
 }
 
-private fun BingoBoard.isComplete(): Boolean {
-    return this.rows.any { row -> row.all { it == -1 } }
-            || this.rows.indices.any { col -> this.rows.all { it[col] == -1 } }
-}
-
-private fun BingoBoard.score(winningNumber: Int): Int {
-    return winningNumber * rows.sumOf { row -> row.filter { it != -1 }.sum() }
-}
 
