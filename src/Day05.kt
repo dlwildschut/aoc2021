@@ -16,13 +16,16 @@ fun main() {
         }
     }
 
+    fun countDuplicates(points: List<Pair<Int, Int>>) =
+        points.groupingBy { it }.eachCount().filter { it.value > 1 }.size
+
     fun part1(input: List<String>): Int {
-        val segments = parse(input).filter { it.startX == it.endX || it.startY == it.endY }
+        val segments = parse(input).filter { it.isNotDiagonal() }
 
         val points =
             segments.flatMap { it.points() }
 
-        return points.groupingBy { it }.eachCount().filter { it.value > 1 }.size
+        return countDuplicates(points)
     }
 
     fun part2(input: List<String>): Int {
@@ -31,7 +34,7 @@ fun main() {
         val points =
             segments.flatMap { it.points() }
 
-        return points.groupingBy { it }.eachCount().filter { it.value > 1 }.size
+        return countDuplicates(points)
     }
 
     val testInput = readInput("Day05_test")
@@ -58,4 +61,6 @@ data class Segment(val startX: Int, val startY: Int, val endX: Int, val endY: In
             add(Pair(currentX, currentY))
         }
     }
+
+    fun isNotDiagonal() = startX == endX || startY == endY
 }
