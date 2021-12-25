@@ -1,4 +1,6 @@
 import kotlin.math.abs
+import kotlin.math.ceil
+import kotlin.math.floor
 
 fun main() {
 
@@ -9,21 +11,21 @@ fun main() {
     fun part1(input: List<String>): Int {
         val crabPositions = parseCrabPositions(input)
         val crabPositionsByCount = crabPositions.groupingBy { it }.eachCount()
+        val geometricMedian = crabPositions.sorted()[crabPositions.size / 2]
 
-        val min = crabPositions.minOrNull() ?: 0
-        val max = crabPositions.maxOrNull() ?: 0
-
-        return (min..max).minOf { crabPositionsByCount.requiredFuelToReach(it) }
+        return crabPositionsByCount.requiredFuelToReach(geometricMedian)
     }
 
     fun part2(input: List<String>): Int {
         val crabPositions = parseCrabPositions(input)
         val crabPositionsByCount = crabPositions.groupingBy { it }.eachCount()
 
-        val min = crabPositions.minOrNull() ?: 0
-        val max = crabPositions.maxOrNull() ?: 0
+        val mean = crabPositionsByCount.mean()
 
-        return (min..max).minOf { crabPositionsByCount.requiredFuelToReach2(it) }
+        val floorOfMean = floor(mean).toInt()
+        val ceilOfMean = ceil(mean).toInt()
+
+        return (floorOfMean..ceilOfMean).minOf { crabPositionsByCount.requiredFuelToReach2(it) }
     }
 
     val testInput = readInput("Day07_test")
@@ -44,4 +46,14 @@ private fun Map<Int, Int>.requiredFuelToReach2(pos: Int): Int =
 private fun requiredFuelToReach2(start: Int, end: Int): Int {
     val diff = abs(end - start).toDouble()
     return (diff / 2 * (diff + 1)).toInt()
+}
+
+private fun Map<Int, Int>.mean(): Double {
+    var sum = 0
+    var totalPositions = 0
+    for ((pos, count) in this) {
+        totalPositions += count
+        sum += pos * count
+    }
+    return sum.toDouble() / totalPositions
 }
